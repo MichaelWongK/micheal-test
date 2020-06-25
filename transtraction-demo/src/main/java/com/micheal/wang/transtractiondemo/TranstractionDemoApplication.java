@@ -1,13 +1,13 @@
-package com.micheal.demo.temp;
+package com.micheal.wang.transtractiondemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MichaelJvmLearnApplication {
+public class TranstractionDemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MichaelJvmLearnApplication.class, args);
+        SpringApplication.run(TranstractionDemoApplication.class, args);
     }
 
 }

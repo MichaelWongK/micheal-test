@@ -1,7 +1,7 @@
 package com.micheal.wang.proxydemo.chain;
 
 public class Client {
-    static  class HandlerA extends Handler {
+    static class HandlerA extends Handler {
 
         @Override
         protected void handleProcess() {
@@ -9,7 +9,7 @@ public class Client {
         }
     }
 
-    static  class HandlerB extends Handler {
+    static class HandlerB extends Handler {
 
         @Override
         protected void handleProcess() {
@@ -17,7 +17,7 @@ public class Client {
         }
     }
 
-    static  class HandlerC extends Handler {
+    static class HandlerC extends Handler {
 
         @Override
         protected void handleProcess() {

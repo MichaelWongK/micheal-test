@@ -18,16 +18,19 @@ public class Person {
 //        this.address = address;
 //    }
 
-    public void eat(String s){
+    public void eat(String s) {
         System.out.println("调用了：公有的，String参数的eat(): s = " + s);
     }
-    protected void paly(){
+
+    protected void paly() {
         System.out.println("调用了：受保护的，无参的paly()");
     }
-    void run(){
+
+    void run() {
         System.out.println("调用了：默认的，无参的run()");
     }
-    private String study(int age){
+
+    private String study(int age) {
         System.out.println("调用了，私有的，并且有返回值的，int参数的study(): age = " + age);
         return "abcd";
     }

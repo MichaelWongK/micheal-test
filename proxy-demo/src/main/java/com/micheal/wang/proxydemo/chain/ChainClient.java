@@ -11,6 +11,7 @@ public class ChainClient {
             System.out.println("handle by Chain A");
         }
     }
+
     static class ChainHandleB extends ChainHandler {
 
         @Override
@@ -18,6 +19,7 @@ public class ChainClient {
             System.out.println("handle by Chain B");
         }
     }
+
     static class ChainHandleC extends ChainHandler {
 
         @Override
