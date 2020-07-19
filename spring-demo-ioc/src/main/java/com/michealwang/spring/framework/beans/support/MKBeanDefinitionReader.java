@@ -114,4 +114,9 @@ public class MKBeanDefinitionReader {
             }
         }
     }
+
+    public Properties getConfig() {
+        return this.contextConfig;
+    }
+
 }

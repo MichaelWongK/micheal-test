@@ -7,7 +7,7 @@
     <display-name>micheal wang Application</display-name>
     <servlet>
         <servlet-name>mkmvc</servlet-name>
-        <servlet-class>com.michealwang.spring.framework.webmvc.servlet.v2.MKDispatcherServlet</servlet-class>
+        <servlet-class>com.michealwang.spring.framework.webmvc.servlet.MKDispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>application.properties</param-value>

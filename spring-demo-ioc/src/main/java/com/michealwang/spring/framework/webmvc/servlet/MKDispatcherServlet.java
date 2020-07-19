@@ -1,24 +1,30 @@
 package com.michealwang.spring.framework.webmvc.servlet;
 
 import com.michealwang.spring.framework.annotation.*;
-import com.michealwang.spring.framework.context.MKApplicationContext;
+import com.michealwang.spring.framework.context.*;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 自定义servlet
  */
 public class MKDispatcherServlet extends HttpServlet {
 
-    private Map<String, Method> handlerMapping = new HashMap<String, Method>();
+    private List<MKHandlerMapping> handlerMappings = new ArrayList<MKHandlerMapping>();
+
+    private Map<MKHandlerMapping, MKHandlerAdapter> handlerAdapters = new HashMap<MKHandlerMapping, MKHandlerAdapter>();
+
+    private List<MKViewResolver> viewResolvers = new ArrayList<MKViewResolver>();
 
     private MKApplicationContext context;
 
@@ -33,62 +39,69 @@ public class MKDispatcherServlet extends HttpServlet {
             doDispatcher(req, resp);
         } catch (Exception e) {
             e.printStackTrace();
-            resp.getWriter().write("500 Exception Detail " + Arrays.toString(e.getStackTrace()));
+//            resp.getWriter().write("500 Exception Detail " + Arrays.toString(e.getStackTrace()));
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put("detail", "500 Exception Detail");
+            model.put("stackTrace", Arrays.toString(e.getStackTrace()));
+            try {
+                processDispatchResult(req, resp, new MKModelAndView("500", model));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
     }
 
     private void doDispatcher(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 
-        // 调用具体的方法
+        // 1. 根据URL区拿到对应的HandleerMapping
+        MKHandlerMapping handler = getHandler(req);
 
+        // 2. 如果拿到的Handler为null，返回404
+        if (handler == null) {
+            processDispatchResult(req, resp, new MKModelAndView("404"));
+            return;
+        }
+
+        // 3. 根据handlerMapping拿到它对应的HandlerAdater
+        MKHandlerAdapter ha = getHandlerAdapter(handler);
+
+        // 4. 根据HandlerAdater的返回结果判断
+        MKModelAndView mv = ha.handle(req, resp, handler);
+
+        // 5. 根据ModelAndView内容，决定选择用哪个ViewResolver去解析
+        processDispatchResult(req, resp, mv);
+
+    }
+
+    private MKHandlerAdapter getHandlerAdapter(MKHandlerMapping handler) {
+        if (this.handlerAdapters.isEmpty()) {return null;}
+        return this.handlerAdapters.get(handler);
+    }
+
+    private void processDispatchResult(HttpServletRequest req, HttpServletResponse resp, MKModelAndView mv) throws Exception {
+        if (null == mv) {return;}
+
+        if (this.viewResolvers.isEmpty()) {return;}
+
+        for (MKViewResolver viewResolver : this.viewResolvers) {
+            MKView view = viewResolver.resolveViewName(mv.getViewName());
+            view.render(mv.getModel(), req, resp);
+        }
+
+    }
+
+    private MKHandlerMapping getHandler(HttpServletRequest req) {
         String url = req.getRequestURI();
         String contextPath = req.getContextPath();
         url = ( "/" + url).replaceAll(contextPath, "").replaceAll("/+", "/");
 
-        if (!this.handlerMapping.containsKey(url)) {
-            resp.getWriter().write("404 Not Found !!!");
-            return;
+        for (MKHandlerMapping handlerMapping : handlerMappings) {
+            Matcher matcher = handlerMapping.getPattern().matcher(url);
+            if (!matcher.matches()) {continue;}
+            return handlerMapping;
         }
-
-        Map<String, String[]> params = req.getParameterMap();
-        Method method = this.handlerMapping.get(url);
-
-        // 形参
-        Class<?> [] paramterTypes = method.getParameterTypes();
-
-        // 实参
-        Object [] paramValues = new Object[paramterTypes.length];
-
-        for (int i=0; i < paramterTypes.length; i++) {
-            Class paramterType = paramterTypes[i];
-            if (paramterType == HttpServletRequest.class) {
-                paramValues[i] = req;
-            } else if (paramterType == HttpServletResponse.class) {
-                paramValues[i] = resp;
-            } else if (paramterType == String.class) {
-                Annotation[][] pa =method.getParameterAnnotations();
-                for (Annotation annotation : pa[i]) {
-                    if (annotation instanceof MKRequestParam) {
-                        String paramName = ((MKRequestParam) annotation).value();
-                        if (!"".equals(paramName)) {
-                            String value = Arrays.toString(params.get(paramName))
-                                    .replaceAll("\\[\\]", "")
-                                    .replaceAll("\\s", "");
-                            paramValues[i] = value;
-                        }
-                    }
-                }
-
-            } else {
-                paramValues[i] = null;
-            }
-        }
-
-
-        String beanName = toLowerFirstCase(method.getDeclaringClass().getSimpleName());
-        method.invoke(context.getBean(beanName), paramValues);
-
+        return null;
     }
 
     @Override
@@ -109,14 +122,44 @@ public class MKDispatcherServlet extends HttpServlet {
         context = new MKApplicationContext(config.getInitParameter("contextConfigLocation"));
 
         // 5.初始化handlerMapping
-        doInitHandlerMapping();
+//        doInitHandlerMapping();
 
+        initStrategies(context);
         // 6.完成
         System.out.println("MKSpring is init OK !!!");
 
     }
 
-    private void doInitHandlerMapping() {
+    private void initStrategies(MKApplicationContext context) {
+
+        // HandlerMappings
+        this.initHandlerMappings(context);
+        // 初始化参数适配器
+        this.initHandlerAdapters(context);
+        // 初始化视图转换器
+        this.initViewResolvers(context);
+
+    }
+
+    private void initViewResolvers(MKApplicationContext context) {
+
+        String templateRoot = context.getConfig().getProperty("templateRoot");
+        String templateRootPath = this.getClass().getClassLoader().getResource(templateRoot).getFile();
+        File templateRootDir = new File(templateRootPath);
+        for (File file : templateRootDir.listFiles()) {
+            this.viewResolvers.add(new MKViewResolver(templateRoot));
+        }
+
+    }
+
+    private void initHandlerAdapters(MKApplicationContext context) {
+        for (MKHandlerMapping handlerMapping : handlerMappings) {
+            this.handlerAdapters.put(handlerMapping, new MKHandlerAdapter());
+        }
+
+    }
+
+    private void initHandlerMappings(MKApplicationContext context) {
 
         if (this.context.getBeanDefinitionCount() == 0) {return;}
 
@@ -138,10 +181,39 @@ public class MKDispatcherServlet extends HttpServlet {
 
                 // 多个 / 替换成一个
                 String url = ("/" + baseUrl + "/" + requestMapping.value()).replaceAll("/+", "/");
-                handlerMapping.put(url, method);
+                Pattern pattern = Pattern.compile(url);
+                handlerMappings.add(new MKHandlerMapping(instance, method, pattern));
                 System.out.println("Mapped : " + url);
             }
         }
+    }
+
+    private void doInitHandlerMapping() {
+
+//        if (this.context.getBeanDefinitionCount() == 0) {return;}
+//
+//        String[] beanNames = this.context.getBeanDefinitionNames();
+//        for (String beanName : beanNames) {
+//            Object instance = this.context.getBean(beanName);
+//
+//            Class<?> clazz = instance.getClass();
+//
+//            if (!clazz.isAnnotationPresent(MKController.class)) {continue;}
+//
+//            String baseUrl = clazz.getAnnotation(MKRequestMapping.class).value();
+//
+//            for (Method method : clazz.getMethods()) {
+//
+//                if (!method.isAnnotationPresent(MKRequestMapping.class)) {continue;}
+//
+//                MKRequestMapping requestMapping = method.getAnnotation(MKRequestMapping.class);
+//
+//                // 多个 / 替换成一个
+//                String url = ("/" + baseUrl + "/" + requestMapping.value()).replaceAll("/+", "/");
+//                handlerMapping.put(url, method);
+//                System.out.println("Mapped : " + url);
+//            }
+//        }
 
     }
 
