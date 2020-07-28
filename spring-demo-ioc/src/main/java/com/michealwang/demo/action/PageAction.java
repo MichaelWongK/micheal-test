@@ -13,8 +13,8 @@ import java.util.Map;
 
 /**
  * 公布接口url
- * @author Tom
  *
+ * @author Tom
  */
 @MKController
 @MKRequestMapping("/")
@@ -24,13 +24,13 @@ public class PageAction {
     private IQueryService queryService;
 
     @MKRequestMapping("/first.html")
-    public MKModelAndView query(@MKRequestParam("name") String name){
+    public MKModelAndView query(@MKRequestParam("name") String name) {
         String result = queryService.query(name);
-        Map<String,Object> model = new HashMap<String,Object>();
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put("name", name);
         model.put("data", result);
         model.put("token", "123456");
-        return new MKModelAndView("first.html",model);
+        return new MKModelAndView("first.html", model);
     }
 
 }

@@ -17,7 +17,7 @@ public class SecKillService {
     public void secKill(String productId) throws RuntimeException {
         long time = System.currentTimeMillis() + TIMEOUT;
         //加锁
-        if (!redisLock.lock(productId, String.valueOf(time))){
+        if (!redisLock.lock(productId, String.valueOf(time))) {
             throw new RuntimeException("人太多了，等会儿再试吧~");
         }
 

@@ -15,7 +15,9 @@ public class MKViewResolver {
     }
 
     public MKView resolveViewName(String viewName) {
-        if (null == viewName || "".equals(viewName.trim())) {return null;}
+        if (null == viewName || "".equals(viewName.trim())) {
+            return null;
+        }
 
         viewName = viewName.endsWith(DEFAULT_TEMPLATE_SUFFIX) ? viewName : (viewName + DEFAULT_TEMPLATE_SUFFIX);
 

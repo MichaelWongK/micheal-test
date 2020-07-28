@@ -1,7 +1,7 @@
 package com.micheal.wang.annotationreflact.reflection;
 
 
-public class Test02 extends Object{
+public class Test02 extends Object {
     public static void main(String[] args) throws ClassNotFoundException {
         Class cl = Class.forName("com.micheal.wang.annotationreflact.reflection.User");
         System.out.println(cl);
@@ -15,6 +15,7 @@ public class Test02 extends Object{
 
     }
 }
+
 class User {
 
     String name;

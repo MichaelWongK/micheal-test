@@ -1,6 +1,6 @@
 package com.michealwang.spring.framework.beans.config;
 
-public class MKBeanDefinition  {
+public class MKBeanDefinition {
 
     private String factoryBeanName;
 

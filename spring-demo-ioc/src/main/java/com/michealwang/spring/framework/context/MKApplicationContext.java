@@ -15,7 +15,7 @@ import java.util.Properties;
 
 public class MKApplicationContext {
 
-    private  String[] configLocations;
+    private String[] configLocations;
 
     private MKBeanDefinitionReader reader;
 
@@ -26,8 +26,7 @@ public class MKApplicationContext {
     private Map<String, Object> factoryBeanObjectCache = new HashMap<String, Object>();
 
 
-
-    public MKApplicationContext(String ... configLocations) {
+    public MKApplicationContext(String... configLocations) {
         this.configLocations = configLocations;
 
         try {
@@ -60,7 +59,7 @@ public class MKApplicationContext {
 
     private void doRegistyBeanDefinition(List<MKBeanDefinition> beanDefinitions) throws Exception {
         for (MKBeanDefinition beanDefinition : beanDefinitions) {
-            if(this.beanDefinitionMap.containsKey(beanDefinition.getFactoryBeanName())) {
+            if (this.beanDefinitionMap.containsKey(beanDefinition.getFactoryBeanName())) {
                 throw new Exception("The " + beanDefinition.getFactoryBeanName() + " is exists!!");
             }
             this.beanDefinitionMap.put(beanDefinition.getFactoryBeanName(), beanDefinition);
@@ -117,7 +116,9 @@ public class MKApplicationContext {
             field.setAccessible(true);
 
             try {
-                if (this.factoryBeanInstanceCache.get(autowiredBeanName) == null) {continue;}
+                if (this.factoryBeanInstanceCache.get(autowiredBeanName) == null) {
+                    continue;
+                }
                 field.set(instance, this.factoryBeanInstanceCache.get(autowiredBeanName).getWrapperInstance());
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

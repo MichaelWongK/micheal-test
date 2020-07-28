@@ -75,14 +75,20 @@ public class MKDispatcherServlet extends HttpServlet {
     }
 
     private MKHandlerAdapter getHandlerAdapter(MKHandlerMapping handler) {
-        if (this.handlerAdapters.isEmpty()) {return null;}
+        if (this.handlerAdapters.isEmpty()) {
+            return null;
+        }
         return this.handlerAdapters.get(handler);
     }
 
     private void processDispatchResult(HttpServletRequest req, HttpServletResponse resp, MKModelAndView mv) throws Exception {
-        if (null == mv) {return;}
+        if (null == mv) {
+            return;
+        }
 
-        if (this.viewResolvers.isEmpty()) {return;}
+        if (this.viewResolvers.isEmpty()) {
+            return;
+        }
 
         for (MKViewResolver viewResolver : this.viewResolvers) {
             MKView view = viewResolver.resolveViewName(mv.getViewName());
@@ -94,11 +100,13 @@ public class MKDispatcherServlet extends HttpServlet {
     private MKHandlerMapping getHandler(HttpServletRequest req) {
         String url = req.getRequestURI();
         String contextPath = req.getContextPath();
-        url = ( "/" + url).replaceAll(contextPath, "").replaceAll("/+", "/");
+        url = ("/" + url).replaceAll(contextPath, "").replaceAll("/+", "/");
 
         for (MKHandlerMapping handlerMapping : handlerMappings) {
             Matcher matcher = handlerMapping.getPattern().matcher(url);
-            if (!matcher.matches()) {continue;}
+            if (!matcher.matches()) {
+                continue;
+            }
             return handlerMapping;
         }
         return null;
@@ -161,7 +169,9 @@ public class MKDispatcherServlet extends HttpServlet {
 
     private void initHandlerMappings(MKApplicationContext context) {
 
-        if (this.context.getBeanDefinitionCount() == 0) {return;}
+        if (this.context.getBeanDefinitionCount() == 0) {
+            return;
+        }
 
         String[] beanNames = this.context.getBeanDefinitionNames();
         for (String beanName : beanNames) {
@@ -169,13 +179,17 @@ public class MKDispatcherServlet extends HttpServlet {
 
             Class<?> clazz = instance.getClass();
 
-            if (!clazz.isAnnotationPresent(MKController.class)) {continue;}
+            if (!clazz.isAnnotationPresent(MKController.class)) {
+                continue;
+            }
 
             String baseUrl = clazz.getAnnotation(MKRequestMapping.class).value();
 
             for (Method method : clazz.getMethods()) {
 
-                if (!method.isAnnotationPresent(MKRequestMapping.class)) {continue;}
+                if (!method.isAnnotationPresent(MKRequestMapping.class)) {
+                    continue;
+                }
 
                 MKRequestMapping requestMapping = method.getAnnotation(MKRequestMapping.class);
 
@@ -221,6 +235,7 @@ public class MKDispatcherServlet extends HttpServlet {
      * 大写字母A对应ASCII码是65，加上32就是小写字母a对应ASCII码97
      * 同理：小写转大写字符-32即可
      * 如果已经是小写字母再加上32，超出字母对应ascii码值，输出" "空字符
+     *
      * @param simpleName
      * @return
      */

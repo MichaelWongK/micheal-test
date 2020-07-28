@@ -16,7 +16,7 @@ public class Test02 {
 
 @Target(value = {ElementType.METHOD, ElementType.TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
-@interface Myannotation{
+@interface Myannotation {
     // 注解的参数：参数类型 + 参数名（）
     String name() default "";
 

@@ -16,8 +16,8 @@ public class MKHandlerAdapter {
 
         // 1. 保存參数名称和位置
         Map<String, Integer> paramIndexMapping = new HashMap<String, Integer>();
-        Annotation[][] pa =handler.getMethod().getParameterAnnotations();
-        for (int i=0; i < pa.length; i++) {
+        Annotation[][] pa = handler.getMethod().getParameterAnnotations();
+        for (int i = 0; i < pa.length; i++) {
             for (Annotation a : pa[i]) {
                 if (a instanceof MKRequestParam) {
                     String paramName = ((MKRequestParam) a).value();
@@ -30,8 +30,8 @@ public class MKHandlerAdapter {
 
         // 2. 匹配形参列表，给实参列表赋值
         // 形参
-        Class<?> [] paramterTypes = handler.getMethod().getParameterTypes();
-        for (int i=0; i < paramterTypes.length; i++) {
+        Class<?>[] paramterTypes = handler.getMethod().getParameterTypes();
+        for (int i = 0; i < paramterTypes.length; i++) {
             Class paramterType = paramterTypes[i];
             if (paramterType == HttpServletRequest.class || paramterType == HttpServletResponse.class) {
                 paramIndexMapping.put(paramterType.getName(), i);
@@ -41,13 +41,15 @@ public class MKHandlerAdapter {
         // 3. 实际赋值
         Map<String, String[]> params = req.getParameterMap();
         // 实参
-        Object [] paramValues = new Object[paramterTypes.length];
+        Object[] paramValues = new Object[paramterTypes.length];
 
         for (Map.Entry<String, String[]> param : params.entrySet()) {
             String value = Arrays.toString(params.get(param.getKey()))
                     .replaceAll("\\[|\\]", "")
                     .replaceAll("\\s", "");
-            if (!paramIndexMapping.containsKey(param.getKey())) {continue;}
+            if (!paramIndexMapping.containsKey(param.getKey())) {
+                continue;
+            }
 
             int index = paramIndexMapping.get(param.getKey());
 
@@ -66,7 +68,9 @@ public class MKHandlerAdapter {
 
         // 4. 执行调用动作
         Object result = handler.getMethod().invoke(handler.getController(), paramValues);
-        if (result == null || result instanceof Void) {return null;}
+        if (result == null || result instanceof Void) {
+            return null;
+        }
 
         boolean isModelAndView = handler.getMethod().getReturnType() == MKModelAndView.class;
         if (isModelAndView) {

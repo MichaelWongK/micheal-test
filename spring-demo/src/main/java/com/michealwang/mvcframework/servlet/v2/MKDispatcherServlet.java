@@ -53,7 +53,7 @@ public class MKDispatcherServlet extends HttpServlet {
 
         String url = req.getRequestURI();
         String contextPath = req.getContextPath();
-        url = ( "/" + url).replaceAll(contextPath, "").replaceAll("/+", "/");
+        url = ("/" + url).replaceAll(contextPath, "").replaceAll("/+", "/");
 
         if (!this.handlerMapping.containsKey(url)) {
             resp.getWriter().write("404 Not Found !!!");
@@ -64,19 +64,19 @@ public class MKDispatcherServlet extends HttpServlet {
         Method method = this.handlerMapping.get(url);
 
         // 形参
-        Class<?> [] paramterTypes = method.getParameterTypes();
+        Class<?>[] paramterTypes = method.getParameterTypes();
 
         // 实参
-        Object [] paramValues = new Object[paramterTypes.length];
+        Object[] paramValues = new Object[paramterTypes.length];
 
-        for (int i=0; i < paramterTypes.length; i++) {
+        for (int i = 0; i < paramterTypes.length; i++) {
             Class paramterType = paramterTypes[i];
             if (paramterType == HttpServletRequest.class) {
                 paramValues[i] = req;
             } else if (paramterType == HttpServletResponse.class) {
                 paramValues[i] = resp;
             } else if (paramterType == String.class) {
-                Annotation[][] pa =method.getParameterAnnotations();
+                Annotation[][] pa = method.getParameterAnnotations();
                 for (Annotation annotation : pa[i]) {
                     if (annotation instanceof MKRequestParam) {
                         String paramName = ((MKRequestParam) annotation).value();
@@ -125,18 +125,24 @@ public class MKDispatcherServlet extends HttpServlet {
 
     private void doInitHandlerMapping() {
 
-        if (ioc.isEmpty()) {return;}
+        if (ioc.isEmpty()) {
+            return;
+        }
 
         for (Map.Entry<String, Object> entry : ioc.entrySet()) {
             Class<?> clazz = entry.getValue().getClass();
 
-            if (!clazz.isAnnotationPresent(MKController.class)) {continue;}
+            if (!clazz.isAnnotationPresent(MKController.class)) {
+                continue;
+            }
 
             String baseUrl = clazz.getAnnotation(MKRequestMapping.class).value();
 
             for (Method method : clazz.getMethods()) {
 
-                if (!method.isAnnotationPresent(MKRequestMapping.class)) {continue;}
+                if (!method.isAnnotationPresent(MKRequestMapping.class)) {
+                    continue;
+                }
 
                 MKRequestMapping requestMapping = method.getAnnotation(MKRequestMapping.class);
 
@@ -153,11 +159,13 @@ public class MKDispatcherServlet extends HttpServlet {
 
     private void doAutowired() {
 
-        if (ioc.isEmpty()) {return;}
+        if (ioc.isEmpty()) {
+            return;
+        }
 
         for (Map.Entry<String, Object> entry : ioc.entrySet()) {
             // private/public/protected/default
-            Field fields [] = entry.getClass().getDeclaredFields();
+            Field fields[] = entry.getClass().getDeclaredFields();
 
             for (Field field : fields) {
                 if (!field.isAnnotationPresent(MKAutowired.class)) {
@@ -186,7 +194,9 @@ public class MKDispatcherServlet extends HttpServlet {
     }
 
     private void doInstance() {
-        if (classNames.isEmpty()) {return;}
+        if (classNames.isEmpty()) {
+            return;
+        }
 
         try {
             for (String className : classNames) {
@@ -211,7 +221,7 @@ public class MKDispatcherServlet extends HttpServlet {
 
                     // 3.如果是接口，用它的实现类赋值
                     for (Class<?> i : clazz.getInterfaces()) {
-                        if(ioc.containsKey(i.getName())) {
+                        if (ioc.containsKey(i.getName())) {
                             throw new Exception("The beanName is exists!!");
                         }
                         // 匹配接口类型
@@ -241,6 +251,7 @@ public class MKDispatcherServlet extends HttpServlet {
      * 大写字母A对应ASCII码是65，加上32就是小写字母a对应ASCII码97
      * 同理：小写转大写字符-32即可
      * 如果已经是小写字母再加上32，超出字母对应ascii码值，输出" "空字符
+     *
      * @param simpleName
      * @return
      */
@@ -261,7 +272,9 @@ public class MKDispatcherServlet extends HttpServlet {
                 doScanner(scanPackage + "." + file.getName());
             } else {
                 // 取反，减少代码嵌套
-                if (!file.getName().endsWith(".class")) {continue;}
+                if (!file.getName().endsWith(".class")) {
+                    continue;
+                }
                 // 拼接全类名
                 String className = scanPackage + "." + file.getName().replace(".class", "");
                 classNames.add(className);

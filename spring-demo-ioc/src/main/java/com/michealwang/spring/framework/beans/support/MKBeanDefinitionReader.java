@@ -33,7 +33,9 @@ public class MKBeanDefinitionReader {
         try {
             for (String className : registryBeanClass) {
                 Class<?> beanClass = Class.forName(className);
-                if (beanClass.isInterface()) {continue;}
+                if (beanClass.isInterface()) {
+                    continue;
+                }
 
                 result.add(doCreateBeanDefinition(toLowerFirstCase(beanClass.getSimpleName()), beanClass.getName()));
 
@@ -64,6 +66,7 @@ public class MKBeanDefinitionReader {
      * 大写字母A对应ASCII码是65，加上32就是小写字母a对应ASCII码97
      * 同理：小写转大写字符-32即可
      * 如果已经是小写字母再加上32，超出字母对应ascii码值，输出" "空字符
+     *
      * @param simpleName
      * @return
      */
@@ -84,7 +87,9 @@ public class MKBeanDefinitionReader {
                 doScanner(scanPackage + "." + file.getName());
             } else {
                 // 取反，减少代码嵌套
-                if (!file.getName().endsWith(".class")) {continue;}
+                if (!file.getName().endsWith(".class")) {
+                    continue;
+                }
                 // 拼接全类名
                 String className = scanPackage + "." + file.getName().replace(".class", "");
                 registryBeanClass.add(className);
