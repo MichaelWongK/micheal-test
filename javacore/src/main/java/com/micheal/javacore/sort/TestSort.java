@@ -18,9 +18,6 @@ import java.util.List;
 @Slf4j
 public class TestSort {
 
-    public void testComparable() {
-                Collections.synchronizedList();
-    }
 
     @org.junit.Test
     public void testSort() {
