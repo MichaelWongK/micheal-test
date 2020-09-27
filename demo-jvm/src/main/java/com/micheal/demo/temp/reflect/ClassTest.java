@@ -44,8 +44,8 @@ public class ClassTest {
             e.printStackTrace();
         }
 
-        HashMap
-                ConnCurrenHashMap
+
+
 
 //        System.out.println("====================fields=================");
 //        Field[] fields = clazz.getDeclaredFields();
