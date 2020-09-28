@@ -271,6 +271,48 @@ public class TestSort {
         nums[j] = t;
     }
 
-    // 贪心算法
-    
+    // 贪心算法 https://leetcode-cn.com/problems/assign-cookies/description/
+//    @Test
+    public void findContentChildren(int[] g, int[] s) {
+        Arrays.sort(g);
+        Arrays.sort(s);
+        int gi = 0, si = 0;
+        while (gi < g.length && si < s.length) {
+            if (g[gi] <= s[si]) {
+                gi++;
+            }
+            si++;
+        }
+    }
+
+    /**
+     * 在每次选择中，区间的结尾最为重要，选择的区间结尾越小，留给后面的区间的空间越大，
+     * 那么后面能够选择的区间个数也就越大。
+     *
+     * 按区间的结尾进行排序，每次选择结尾最小，并且和前一个区间不重叠的区间。
+     */
+    @Test
+    public void eraseOverlapIntervals() {
+        int[][] intervals = new int[][] {{1,2}, {2,3}, {3,4}, {1,3} };
+        if (intervals.length == 0) {
+            return;
+        }
+        Arrays.sort(intervals, Comparator.comparingInt(o -> o[1]));
+        int cnt = 1;
+        int end = intervals[0][1];
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] < end) {
+                continue;
+            }
+            end = intervals[i][1];
+            cnt++;
+        }
+        System.out.println(intervals.length - cnt);
+        return ;
+    }
+    public static void main(String[] args) {
+        int[][] intervals = new int[][] {{1,2}, {1,2}, {1,2} };
+    }
+
+
 }
