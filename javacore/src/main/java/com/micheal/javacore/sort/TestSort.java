@@ -310,9 +310,173 @@ public class TestSort {
         System.out.println(intervals.length - cnt);
         return ;
     }
-    public static void main(String[] args) {
-        int[][] intervals = new int[][] {{1,2}, {1,2}, {1,2} };
+
+    /**
+     * 投飞镖刺破气球
+     *
+     * 题目描述：气球在一个水平数轴上摆放，可以重叠，飞镖垂直投向坐标轴，使得路径上的气球都被刺破。
+     * 求解最小的投飞镖次数使所有气球都被刺破。
+     * 也是计算不重叠的区间个数，不过和 Non-overlapping Intervals 的区别在于，
+     * [1, 2] 和 [2, 3] 在本题中算是重叠区间。
+     */
+    @Test
+    public void findMinArrowShots() {
+        int[][] points = new int[][]{{7,0}, {4,4}, {7,1}, {5,0}, {6,1}, {5,2}};
+        Arrays.sort(points, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[1] - o2[1];
+            }
+        });
+        int cnt = 1, end = points[0][1];
+        for (int i = 1; i < points.length; i++) {
+            if (points[i][0] <= end) {
+                continue;
+            }
+            cnt++;
+            end = points[i][1];
+        }
+        System.out.println(cnt);
     }
 
+    /**
+     * Input:
+     * [[7,0], [4,4], [7,1], [5,0], [6,1], [5,2]]
+     *
+     * Output:
+     * [[5,0], [7,0], [5,2], [6,1], [4,4], [7,1]]
+     * 题目描述：一个学生用两个分量 (h, k) 描述，h 表示身高，
+     * k 表示排在前面的有 k 个学生的身高比他高或者和他一样高。
+     *
+     * 为了使插入操作不影响后续的操作，身高较高的学生应该先做插入操作，
+     * 否则身高较小的学生原先正确插入的第 k 个位置可能会变成第 k+1 个位置。
+     *
+     * 身高 h 降序、个数 k 值升序，然后将某个学生插入队列的第 k 个位置中。
+     */
+    @Test
+    public void reconstructQueue() {
+        int[][] people = new int[][]{{7,0}, {4,4}, {7,1}, {5,0}, {6,1}, {5,2}};
+        Arrays.sort(people, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] == o2[0] ? o1[1] - o2[1] : o2[0] - o1[0];
+            }
+        });
+        List<int[]> queue = new ArrayList<>();
+        for (int[] p: people) {
+            queue.add(p[1], p);
+        }
+        System.out.println(queue.toArray(new int[queue.size()][]));
+    }
+
+    /**
+     * 买卖股票最大的收益
+     * 一次股票交易包含买入和卖出，只进行一次交易，求最大收益。
+     *
+     * 只要记录前面的最小价格，将这个最小价格作为买入价格，然后将当前的价格作为售出价格，查看当前收益是不是最大收益。
+     */
+    @Test
+    public void maxProfit() {
+        int[] prices = new int[]{7,1,5,3,6,4};
+        if (prices.length == 0)
+            return;
+        int min = prices[0], max = 0;
+        for (int i = 1; i < prices.length; i++) {
+            if (min > prices[i]) {
+                min = prices[i];
+            } else {
+                max = Math.max(max, prices[i] - min);
+            }
+        }
+        System.out.println(max);
+    }
+
+    /**
+     * 买卖股票的最大收益 II
+     * 可以进行多次交易，多次交易之间不能交叉进行，可以进行多次交易。
+     *
+     * 对于 [a, b, c, d]，如果有 a <= b <= c <= d ，那么最大收益为 d - a。
+     * 而 d - a = (d - c) + (c - b) + (b - a) ，
+     * 因此当访问到一个 prices[i] 且 prices[i] - prices[i-1] > 0，
+     * 那么就把 prices[i] - prices[i-1] 添加到收益中。
+     */
+    @Test
+    public void  maxProfit2() {
+        int[] prices = new int[] {7,1,5,3,6,4};
+        int profit = 0;
+        for (int i = prices.length-1; i > 0; i--) {
+            if (prices[i] > prices[i-1]) {
+                profit += prices[i] - prices[i-1];
+            }
+        }
+        System.out.println(profit);
+    }
+
+    /**
+     * 种花问题
+     * 假设你有一个很长的花坛，一部分地块种植了花，另一部分却没有。可是，花卉不能种植在相邻的地块上，
+     * 它们会争夺水源，两者都会死去。
+     *
+     * 给定一个花坛（表示为一个数组包含0和1，其中0表示没种植花，1表示种植了花），和一个数 n 。
+     * 能否在不打破种植规则的情况下种入 n 朵花？能则返回True，不能则返回False。
+     *
+     */
+    @Test
+    public void canPlaceFlower() {
+        int[] flowerbed = new int[]{1,0,0,0,1,0,0};
+        int n = 2;
+        int cnt = 0;
+        for (int i = 0; i < flowerbed.length && cnt < n ; i++) {
+            if (flowerbed[i] == 1)
+                continue;
+            int prev = i == 0 ? 0 : flowerbed[i-1];
+            int next = i == flowerbed.length - 1 ? 0: flowerbed[i+1];
+            if (prev == 0 && next == 0) {
+                cnt++;
+                flowerbed[i] = 1;
+            }
+        }
+        System.out.println(cnt>=n);
+    }
+
+    /**
+     * 在出现 nums[i] < nums[i - 1] 时，需要考虑的是应该修改数组的哪个数，
+     * 使得本次修改能使 i 之前的数组成为非递减数组，并且 不影响后续的操作 。
+     * 优先考虑令 nums[i - 1] = nums[i]，因为如果修改 nums[i] = nums[i - 1] 的话，
+     * 那么 nums[i] 这个数会变大，就有可能比 nums[i + 1] 大，从而影响了后续操作。
+     * 还有一个比较特别的情况就是 nums[i] < nums[i - 2]，
+     * 修改 nums[i - 1] = nums[i] 不能使数组成为非递减数组，只能修改 nums[i] = nums[i - 1]。
+     */
+    @Test
+    public void checkPossibility() {
+        int[] nums = new int[]{3,4,2,3};
+        int cnt = 0;
+        for (int i=1; i < nums.length && cnt < 2; i++) {
+            if (nums[i] >= nums[i-1])
+                continue;
+            cnt++;
+            if (i - 2 >= 0 && nums[i - 2] > nums[i]) {
+                nums[i] = nums[i-1];
+            } else {
+                nums[i-1] = nums[i];
+            }
+        }
+        System.out.println(cnt<=1);
+    }
+
+    public static void main(String[] args) {
+        int[][] people = new int[][]{{7,0}, {4,4}, {7,1}, {5,0}, {6,1}, {5,2}};
+        Arrays.sort(people, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] == o2[0] ? o1[1] - o2[1] : o2[0] - o1[0];
+            }
+        });
+        List<int[]> queue = new ArrayList<>();
+        for (int[] p: people) {
+            queue.add(p[1], p);
+        }
+
+    }
 
 }
