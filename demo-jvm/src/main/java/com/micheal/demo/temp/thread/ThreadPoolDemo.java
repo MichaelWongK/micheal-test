@@ -3,6 +3,7 @@ package com.micheal.demo.temp.thread;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author <a href="mailto:wangmk13@163.com">micheal.wang</a>
@@ -106,7 +107,7 @@ public class ThreadPoolDemo {
 //        // 大神做法，做了哪些，里面经历了哪些？
 //        // 提倡面向接口编程？为何？因为接口是高度抽象，符合业务的逻辑分析，可以通过接口来把
 //        // 实际的业务给书写和构思出来，然后具体实现。
-//        ExecutorService newCachedThreadPool = Executors.newCachedThreadPool();
+        ExecutorService newCachedThreadPool = Executors.newCachedThreadPool();
 //        ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(10);
 //        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool();
 //        ExecutorService newSingleThreadExecutor = Executors.newSingleThreadExecutor();
