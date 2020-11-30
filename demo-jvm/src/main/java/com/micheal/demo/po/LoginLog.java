@@ -9,60 +9,46 @@ public class LoginLog{
 	private Integer id;
 	private Integer type;
 	private String msgId;
-
-	public Date getUpdateTime() {
-		return updateTime;
-	}
-
-	public void setUpdateTime(Date updateTime) {
+	private void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
 	}
-
-	public Date getCreateTime() {
-		return createTime;
+	private Date getUpdateTime() {
+		return updateTime;
 	}
-
-	public void setCreateTime(Date createTime) {
+	private void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
-
-	public Integer getUserId() {
-		return userId;
+	private Date getCreateTime() {
+		return createTime;
 	}
-
-	public void setUserId(Integer userId) {
+	private void setUserId(Integer userId) {
 		this.userId = userId;
 	}
-
-	public String getDescription() {
-		return description;
+	private Integer getUserId() {
+		return userId;
 	}
-
-	public void setDescription(String description) {
+	private void setDescription(String description) {
 		this.description = description;
 	}
-
-	public Integer getId() {
-		return id;
+	private String getDescription() {
+		return description;
 	}
-
-	public void setId(Integer id) {
+	private void setId(Integer id) {
 		this.id = id;
 	}
-
-	public Integer getType() {
-		return type;
+	private Integer getId() {
+		return id;
 	}
-
-	public void setType(Integer type) {
+	private void setType(Integer type) {
 		this.type = type;
 	}
-
-	public String getMsgId() {
-		return msgId;
+	private Integer getType() {
+		return type;
 	}
-
-	public void setMsgId(String msgId) {
+	private void setMsgId(String msgId) {
 		this.msgId = msgId;
+	}
+	private String getMsgId() {
+		return msgId;
 	}
 }

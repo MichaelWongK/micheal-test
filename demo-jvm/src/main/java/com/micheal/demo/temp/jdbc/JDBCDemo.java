@@ -1,15 +1,12 @@
 package com.micheal.demo.temp.jdbc;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
+import test.Test;
+
+import java.io.*;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -42,9 +39,21 @@ public class JDBCDemo {
          * 所以 java 引入了 JAVA的加载机制：采用双亲委派机制和JAVA安全沙箱来保证JVM的安全
          * 双亲委派：Bootstrap Classloader,Ext Classloader,System Classloader,用户自定义
          */
-        Class.forName("com.mysql.cj.jdbc.Driver");//这个方法加载一个类返回一个类的实例对象：class
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        /**
+         * 首先再做一件事情之前一定要明确需求~这样才能更好的完成这件事并且不容易返工。不要急于写代码。不要急于动不动就开始SSM dubbo 得
+         * 根据业务就是根据需求+框架的优点（框架能帮你干嘛） = 技术选型 也就选取使用的框架。码农和架构师的一个区别 那就是眼界的大小。
+         *
+         * 开始需求： 从这里可以看到类似于数据库的驱动。数据库密码。数据库用户名。以及要生成PO的表名写死在code里面 如果我们把这个代码
+         * 打成jar包到
+         * 别的项目里面去使用【jar文件里面全是编译好的class】那么如果另外一个项目它使用的不是mysql或者用户名不一样。那么不可能去改代码吧。
+         * 所以我们要把可以抽取出来的都抽取出来可配置
+         *
+         */
+        Class.forName(Utils.getDriver());//这个方法加载一个类返回一个类的实例对象：class
         Connection connection = DriverManager
-                .getConnection("jdbc:mysql://micheal.wang:3306/mq-mail","root","mingkai13");
+                .getConnection(Utils.getUrl(),Utils.getUsername(),Utils.getPassword());
         System.out.println(connection);
 
         /**
@@ -53,12 +62,12 @@ public class JDBCDemo {
          * 行<-->对象对应 列<-->对象属性对应 1.找到数据库 2.找到表 3.读取表的列信息 4.根据列信息构建类属性
          */
         DatabaseMetaData metaData = connection.getMetaData();// 获取数据库的原信息
-        ResultSet tables = metaData.getTables("mq-mail", null, null, null);
+        ResultSet tables = metaData.getTables(Utils.getDataBase(), null, null, null);
         /**
          * Exception in thread "main" java.sql.SQLException: Column Index out of
          * range, 0 < 1. 通过这里我们可以看到对于结果集来说必须index的值从1开始
          */
-        String packageName="com.micheal.demo.po";
+        String packageName = Utils.getPackageName();
         String path = Utils.createDir(packageName);
         while (tables.next()) {
             // String string1 = tables.getString(1);//数据库名
@@ -69,7 +78,7 @@ public class JDBCDemo {
              * 创建类: 1、指明输出地点 2、构建类名 3、写入属性 4、封装属性
              */
             StringBuilder contentBuilder = new StringBuilder();// 包装一个方法，来格式化类名
-            ResultSet columns = metaData.getColumns("mq-mail", "mq-mail", tableName, null);
+            ResultSet columns = metaData.getColumns(Utils.getDataBase(), Utils.getDataBase(), tableName, null);
             Map<String, String> dataMap = new HashMap<>();
             while (columns.next()) {
                 String columnName = columns.getString("COLUMN_NAME");
@@ -134,13 +143,11 @@ public class JDBCDemo {
     }
 }
 
-/**
- * 工具类提供在构建JAVA BEAN时使用方法
- */
 class Utils {
 
     public final static Map<String, String> SQL_TYPE2JAVA_TYPE = new HashMap<>();
     public final static Map<String, String> IMPORT_PACK_MAP = new HashMap<>();
+    private final static Properties JDBC_PROPERTIES = new Properties();
 
     static {
         SQL_TYPE2JAVA_TYPE.put("INT UNSIGNED", "Integer");
@@ -154,7 +161,71 @@ class Utils {
         IMPORT_PACK_MAP.put("INT UNSIGNED", "");
         IMPORT_PACK_MAP.put("DATETIME", "import java.util.Date;");
         IMPORT_PACK_MAP.put("TIMESTAMP", "import java.util.Date;");
+
+        /**
+         * 初始化jdbc信息
+         * 1、使用类加载器或得jdbc信息
+         * 2、放入JDBC_PROPERTIES
+         */
+        InputStream resourceAsStream = Test.class.getClassLoader().getResourceAsStream("application.properties");
+        try {
+            JDBC_PROPERTIES.load(resourceAsStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
     }
+
+    public static String getDriver() {
+        String property = JDBC_PROPERTIES.getProperty("jdbc.driver");
+        if (property == null) {
+            throw new RuntimeException("驱动加载失败");
+        }
+        return property;
+    }
+
+    public static String getUrl() {
+        String property = JDBC_PROPERTIES.getProperty("jdbc.url");
+        if (property == null) {
+            throw new RuntimeException("url加载失败");
+        }
+        return property;
+    }
+
+    public static String getUsername() {
+        String property = JDBC_PROPERTIES.getProperty("jdbc.username");
+        if (property == null) {
+            throw new RuntimeException("username加载失败");
+        }
+        return property;
+    }
+
+    public static String getPassword() {
+        String property = JDBC_PROPERTIES.getProperty("jdbc.password");
+        if (property == null) {
+            throw new RuntimeException("password加载失败");
+        }
+        return property;
+    }
+
+    public static String getPackageName() {
+        String property = JDBC_PROPERTIES.getProperty("packageName.path");
+        if (property == null) {
+            throw new RuntimeException("packageName载失败");
+        }
+        return property;
+    }
+
+    public static String getDataBase() {
+        String property = getUrl();
+        String substring = property.substring(property.lastIndexOf("/"));
+        if (substring == null) {
+            throw new RuntimeException("请在url地址后加上数据库名");
+        }
+        return substring;
+    }
+
+
 
     /**
      *
@@ -247,6 +318,24 @@ class Utils {
 
     public static String firstWordUp(String word) {
         return word.substring(0, 1).toUpperCase() + word.substring(1);
+    }
+
+    public static void gracefulClose(Connection connection, Statement statement, ResultSet resultSet) {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+
+            if (statement != null) {
+                statement.close();
+            }
+
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
