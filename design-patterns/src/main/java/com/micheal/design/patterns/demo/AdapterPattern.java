@@ -94,7 +94,7 @@ class MNImpl extends MNAdapter {
     }
 }
 
-public class adapterPattern {
+public class AdapterPattern {
 
     /**
      * 对象适配器模式
