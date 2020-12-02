@@ -2,6 +2,9 @@ package com.micheal.demo.temp.dataSource;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -74,7 +77,8 @@ class MKDataSource extends DataSourceAdapter {
             Class.forName("com.mysql.cj.jdbc.Driver");
             for (int i = 0; i< 10; i++) {
                 Connection connection = DriverManager.getConnection("jdbc:mysql://micheal.wang:3306/mq-mail", "root", "mingkai13");
-                POOL.add(connection);
+                DataSourceProxy dataSourceProxy = new DataSourceProxy(connection, POOL);
+                POOL.add((Connection) dataSourceProxy.getProxy());
             }
             System.out.println("init database pool success");
         } catch (Exception e) {
@@ -98,11 +102,38 @@ class MKDataSource extends DataSourceAdapter {
     }
 }
 
+class DataSourceProxy implements InvocationHandler {
+
+    private Object target;
+    private List<Connection> POOL;
+
+    public DataSourceProxy(Object target, List<Connection> POOL) {
+        this.target = target;
+        this.POOL = POOL;
+    }
+
+    public Object getProxy() {
+        Class<?> clazz = target.getClass();
+        return Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), this::invoke);
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if (method.getName().equals("close")) {
+            POOL.add((Connection) target);
+            System.out.println("connection was collected,POOL size:"+POOL.size());
+            return null;
+        }
+        return method.invoke(target, args);
+    }
+}
+
 public class DataSourceAdapterDemo {
 
     public static void main(String[] args) throws SQLException {
         MKDataSource mkDataSource = new MKDataSource();
         Connection connection = mkDataSource.getConnection();
+        connection.close();
         System.out.println(connection);
     }
 }
