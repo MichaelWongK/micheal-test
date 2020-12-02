@@ -97,7 +97,7 @@ class MNImpl extends MNAdapter {
 public class adapterPattern {
 
     /**
-     * 适配对象
+     * 对象适配器模式
      */
     public static void ObjectAdapter() {
         C c = new C() {
@@ -111,6 +111,9 @@ public class adapterPattern {
         a.methodA();
     }
 
+    /**
+     * 类适配器模式
+     */
     public static void clazzAdapter() {
         N m = new MNImpl();
         m.methodN1();
