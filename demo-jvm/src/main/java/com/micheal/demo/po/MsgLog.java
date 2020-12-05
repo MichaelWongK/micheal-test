@@ -11,6 +11,22 @@ public class MsgLog{
 	private String msgId;
 	private String routingKey;
 	private Integer status;
+
+	public MsgLog() {
+	}
+
+	public MsgLog(String msg, Date nextTryTime, Date updateTime, Date createTime, Integer tryCount, String exchange, String msgId, String routingKey, Integer status) {
+		this.msg = msg;
+		this.nextTryTime = nextTryTime;
+		this.updateTime = updateTime;
+		this.createTime = createTime;
+		this.tryCount = tryCount;
+		this.exchange = exchange;
+		this.msgId = msgId;
+		this.routingKey = routingKey;
+		this.status = status;
+	}
+
 	private void setMsg(String msg) {
 		this.msg = msg;
 	}
@@ -64,5 +80,20 @@ public class MsgLog{
 	}
 	private Integer getStatus() {
 		return status;
+	}
+
+	@Override
+	public String toString() {
+		return "MsgLog{" +
+				"msg='" + msg + '\'' +
+				", nextTryTime=" + nextTryTime +
+				", updateTime=" + updateTime +
+				", createTime=" + createTime +
+				", tryCount=" + tryCount +
+				", exchange='" + exchange + '\'' +
+				", msgId='" + msgId + '\'' +
+				", routingKey='" + routingKey + '\'' +
+				", status=" + status +
+				'}';
 	}
 }
