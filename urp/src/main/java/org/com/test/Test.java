@@ -33,9 +33,10 @@ public class Test {
 			// TODO Auto-generated method stub
 			return true;
 		}
-		
+
 	}
-	@org.junit.Test
+
+	@org.testng.annotations.Test
 	public void hashMapTest() throws Exception{
 		Person person1 = new Person();
 		person1.setName("稀里哗啦");
@@ -52,23 +53,23 @@ public class Test {
 		System.out.println(person1.hashCode());
 		System.out.println(person2.hashCode());
 	}
-	@org.junit.Test
+	@org.testng.annotations.Test
 	public void jdbcDriverTest() throws Exception{
 		Connection connection = JbdcUtil.getConnection();
 		System.out.println(connection);
 	}
-	@org.junit.Test
+	@org.testng.annotations.Test
 	public void filePathTest() throws Exception{
 		File file = new File("");
 		System.out.println(file.getCanonicalPath());
-		System.out.println(System.getProperty("user.dir"));			
+		System.out.println(System.getProperty("user.dir"));
 	}
-	@org.junit.Test
+	@org.testng.annotations.Test
 	public void ormBeanTest() throws Exception{
 		UrpUser bean = OrmUtil.getBean(UrpUser.class, "select UserName from Urp_User");
 		System.out.println(bean);
 	}
-	@org.junit.Test
+	@org.testng.annotations.Test
 	public void resultSetTest() throws Exception{
 		Statement statement=null;
 		Connection connection=null;

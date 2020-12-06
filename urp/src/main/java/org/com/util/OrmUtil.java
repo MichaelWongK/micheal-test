@@ -1,11 +1,9 @@
 package org.com.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.Arrays;
+import java.util.Date;
 
 public class OrmUtil {
 	/***
@@ -30,26 +28,27 @@ public class OrmUtil {
 			rs = statement.executeQuery(querySQL);
 			if(rs.next()){
 				newInstance = clazz.newInstance();
-				for (Field field : declaredFields) {
-					String name = field.getName();
-					field.setAccessible(true);
-					//获取到当前属性的类型 jdbcType="java.lang.Integer"
-					Class<?> type = field.getType();
-					switch(type.getName()){
-					case "java.lang.String":
-						field.set(newInstance, rs.getString(name));
-						break;
-					case "java.lang.Byte":
-						field.set(newInstance, rs.getByte(name));
-						break;
-					case "java.lang.Integer":
-						field.set(newInstance, rs.getInt(name));
-						break;
-					case "java.util.Date":
-						field.set(newInstance, rs.getDate(name));
-						break;
+				int[] columnToProperty = columnToProperty(rs, declaredFields);
+				for (int i = 1; i < columnToProperty.length; i++) {
+					if (columnToProperty[i] != -1) {
+						// 数组的值映射到fields数组
+						Field field = declaredFields[columnToProperty[i]];
+						field.setAccessible(true);
+						// 首先拿到第一列的值
+						Class<?> type = field.getType();
+						if (type == Integer.class || type== Integer.TYPE) {
+							field.set(newInstance, rs.getInt(i));
+						} else if (type == Byte.class || type== Byte.TYPE) {
+							field.set(newInstance, rs.getByte(i));
+						} else if (type == Date.class) {
+							field.set(newInstance, rs.getDate(i));
+						} else if (type == String.class) {
+							field.set(newInstance, rs.getString(i));
+						}
+
 					}
 				}
+
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -59,5 +58,25 @@ public class OrmUtil {
 			JbdcUtil.gracefulClose(statement, rs, connection);
 		}
 		return newInstance;
+	}
+
+	private static int[] columnToProperty(ResultSet rs, Field[] declaredFields) throws Exception {
+		ResultSetMetaData metaData = rs.getMetaData();
+		int columnCount = metaData.getColumnCount();
+
+		int[] columnToProperty = new int[columnCount + 1];
+		Arrays.fill(columnToProperty, -1);
+
+		// 建立映射关系
+		for (int i = 1; i < columnCount + 1; i++) {
+			for (int j = 0; j < declaredFields.length; j++) {
+				if (metaData.getColumnName(i).equalsIgnoreCase(declaredFields[j].getName())) {
+					columnToProperty[i] = j;
+					break;
+				}
+			}
+		}
+
+		return columnToProperty;
 	}
 }
