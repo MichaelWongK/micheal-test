@@ -1,7 +1,11 @@
 package org.com.util;
 
 import java.lang.reflect.Field;
-import java.sql.*;
+import java.lang.reflect.Type;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -28,27 +32,32 @@ public class OrmUtil {
 			rs = statement.executeQuery(querySQL);
 			if(rs.next()){
 				newInstance = clazz.newInstance();
-				int[] columnToProperty = columnToProperty(rs, declaredFields);
+				int[] columnToProperty = columnToProperty(rs,declaredFields);
 				for (int i = 1; i < columnToProperty.length; i++) {
 					if (columnToProperty[i] != -1) {
-						// 数组的值映射到fields数组
+						// 数组的值映射到Fields数组
 						Field field = declaredFields[columnToProperty[i]];
 						field.setAccessible(true);
-						// 首先拿到第一列的值
+						// 拿到映射的java bean的属性类型
 						Class<?> type = field.getType();
-						if (type == Integer.class || type== Integer.TYPE) {
+						if (type == Integer.class || type == Integer.TYPE) {
+							// field.set(obj, value);
 							field.set(newInstance, rs.getInt(i));
-						} else if (type == Byte.class || type== Byte.TYPE) {
+						}
+						else if (type == Byte.class || type == Byte.TYPE) {
+							// field.set(obj, value);
 							field.set(newInstance, rs.getByte(i));
-						} else if (type == Date.class) {
+						}
+						else if (type == Date.class) {
+							// field.set(obj, value);
 							field.set(newInstance, rs.getDate(i));
-						} else if (type == String.class) {
+						}
+						else if (type == String.class) {
+							// field.set(obj, value);
 							field.set(newInstance, rs.getString(i));
 						}
-
 					}
 				}
-
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -59,24 +68,19 @@ public class OrmUtil {
 		}
 		return newInstance;
 	}
-
-	private static int[] columnToProperty(ResultSet rs, Field[] declaredFields) throws Exception {
+	private static int[] columnToProperty(ResultSet rs,Field[] declaredFields)throws Exception{
 		ResultSetMetaData metaData = rs.getMetaData();
 		int columnCount = metaData.getColumnCount();
-
-		int[] columnToProperty = new int[columnCount + 1];
+		int[] columnToProperty= new int[columnCount + 1];
 		Arrays.fill(columnToProperty, -1);
-
-		// 建立映射关系
 		for (int i = 1; i < columnCount + 1; i++) {
 			for (int j = 0; j < declaredFields.length; j++) {
-				if (metaData.getColumnName(i).equalsIgnoreCase(declaredFields[j].getName())) {
+				if (declaredFields[j].getName().equalsIgnoreCase(metaData.getColumnName(i))) {
 					columnToProperty[i] = j;
 					break;
 				}
 			}
 		}
-
 		return columnToProperty;
 	}
 }

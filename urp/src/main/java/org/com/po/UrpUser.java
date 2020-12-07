@@ -1,6 +1,12 @@
 package org.com.po;
 import java.util.Date;
+
+import org.com.annotation.Bean;
+@Bean
 public class UrpUser{
+	static{
+		System.out.println("urp user init");
+	}
 	private String department;
 	private Byte type;
 	private String userName;
@@ -8,6 +14,20 @@ public class UrpUser{
 	private Integer userId;
 	private Date createTime;
 	private String password;
+	public UrpUser(){
+		
+	}
+	public UrpUser(String department, Byte type, String userName, Integer userTell, Integer userId, Date createTime,
+			String password) {
+		super();
+		this.department = department;
+		this.type = type;
+		this.userName = userName;
+		this.userTell = userTell;
+		this.userId = userId;
+		this.createTime = createTime;
+		this.password = password;
+	}
 	public void setDepartment(String department) {
 		this.department = department;
 	}
