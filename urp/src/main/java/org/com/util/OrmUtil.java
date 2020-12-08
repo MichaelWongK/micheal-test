@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class OrmUtil {
+	public static <T> T getBean(Class<T> clazz, String querySQL) {
+		return 	getBean(clazz, querySQL, null);
+	}
 	/***
 	 * 通过bean的class做ORM映射
 	 * 现有问题：
@@ -17,9 +20,10 @@ public class OrmUtil {
 	 * java.sql.SQLException: Column 'department' not found.
 	 * @param clazz
 	 * @param querySQL
+	 * @param args
 	 * @return
 	 */
-	public static <T> T getBean(Class<T> clazz, String querySQL) {
+	public static <T> T getBean(Class<T> clazz, String querySQL,Object...args) {
 		T newInstance = null;
 		Field[] declaredFields = clazz.getDeclaredFields();
 		Statement statement=null;

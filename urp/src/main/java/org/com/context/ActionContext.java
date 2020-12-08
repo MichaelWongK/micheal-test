@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -25,8 +26,28 @@ public class ActionContext {
 	
 	//是否线程安全？
 	private static Map<String, ActionMetaData> controllerMap;
+	private static List<Class<?>> loadBeanDefination;
 	static{
 		controllerMap=ActionContextUtil.loadActionData();
+		try {
+			loadBeanDefination= ActionContextUtil.loadBeanDefination();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static Map<String, ActionMetaData> getControllerMap() {
+		return controllerMap;
+	}
+	public static void setControllerMap(Map<String, ActionMetaData> controllerMap) {
+		ActionContext.controllerMap = controllerMap;
+	}
+	public static List<Class<?>> getLoadBeanDefination() {
+		return loadBeanDefination;
+	}
+	public static void setLoadBeanDefination(List<Class<?>> loadBeanDefination) {
+		ActionContext.loadBeanDefination = loadBeanDefination;
 	}
 	public static ActionMetaData getActionMeta(String uriStr){
 		return controllerMap.get(getRealUrl(uriStr));

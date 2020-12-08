@@ -107,7 +107,7 @@ public class Genericity {
     }
     //泛型方法
     //这个方法是泛型的，也就是不知道是啥类型的，泛型方法可以独立存在，也就是不依赖于泛型类
-//	public static <T extends Number> void genericMethod(T t) {//这里的t就是根据传进来的参数来决定类型
-//		System.out.println(((Number)t));
-//	}
+	public static <T> void genericMethod(T t) {//这里的t就是根据传进来的参数来决定类型
+		System.out.println(((Number)t));
+	}
 }

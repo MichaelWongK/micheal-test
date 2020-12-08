@@ -18,7 +18,7 @@
 		<div class="layui-col-md5 layui-col-md-offset4" id="wrapDIV">
 			<div class="layui-row">
 				<form id="loginForm" class="layui-form"
-					action="${pageContext.request.contextPath}/loginServlet">
+					action="${pageContext.request.contextPath}/login.action">
 					<div class="layui-form-item">
 						<label class="layui-form-label">用户名</label>
 						<div class="layui-input-inline">
