@@ -2,15 +2,22 @@ package org.com.test;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
+import org.com.json.JSON;
+import org.com.orm.strategy.ListBeanHandler;
+import org.com.orm.strategy.SingtonBeanHandler;
 import org.com.po.UrpUser;
 import org.com.util.JbdcUtil;
 import org.com.util.OrmUtil;
@@ -18,6 +25,75 @@ import org.com.util.OrmUtil;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
 public class Test {
+	@org.junit.Test
+	public void simpleTest() throws Exception {
+		Object object= "hello";
+		//class java.lang.String为什么不是object类型的？？
+		//这里的object是一个引用，而指向的真实对象是string。而对象头部持有指向当前对象类型的class对象，所以通过getClass（）拿到的是String
+		System.out.println(object.getClass());
+	}
+	@org.junit.Test
+	public void json_HandlerTest() throws Exception {
+		// UrpUser urpUser = new UrpUser();
+		// urpUser.setUserId(1);
+		// urpUser.setUserName("jetty");
+		// urpUser.setPassword("root");
+		// Class<? extends UrpUser> class1 = urpUser.getClass();
+		// Field[] fields = class1.getDeclaredFields();
+		// for (Field field : fields) {
+		// field.setAccessible(true);
+		// System.out.println(field.get(urpUser));
+		// }
+		ArrayList<UrpUser> arrayList = new ArrayList<UrpUser>() {
+			{
+				UrpUser urpUser1 = new UrpUser();
+				urpUser1.setUserId(1);
+				urpUser1.setUserName("jetty1");
+				urpUser1.setPassword("root");
+				
+				UrpUser urpUser2 = new UrpUser();
+				urpUser2.setUserId(2);
+				urpUser2.setUserName("jetty2");
+				urpUser2.setPassword("root");
+				
+				UrpUser urpUser3 = new UrpUser();
+				urpUser3.setUserId(3);
+				urpUser3.setUserName("jetty3");
+				urpUser3.setPassword("root");
+				add(urpUser1);
+				add(urpUser2);
+				add(urpUser3);
+			}
+		};
+		HashMap<String, Object> hashMap = new HashMap<>();
+		hashMap.put("data", arrayList);
+		hashMap.put("count", arrayList.size());
+		String parseObject = JSON.parseObject(hashMap);
+		System.out.println(parseObject);
+	}
+
+//	@org.junit.Test
+//	public void ORM_HandlerTest() throws Exception {
+//		// 可变参数可以没有
+//		UrpUser query = OrmUtil.query("select * from urp_user limit 1", new ListBeanHandler<UrpUser>(UrpUser.class));
+//		System.out.println(query);
+//	}
+
+	class TestClass<T> {
+		public T printType() {
+			Integer integer = new Integer(1);
+			return (T) integer;
+		}
+	}
+
+	@org.junit.Test
+	public void geneTest() throws Exception {
+		/**
+		 * 泛型泛指一切类型，而list也是一个类型，所以可以当做泛型的参数传递
+		 */
+		TestClass<List<Integer>> testClass = new TestClass<>();
+	}
+
 	static class Person {
 		private String name;
 
@@ -74,11 +150,11 @@ public class Test {
 		System.out.println(System.getProperty("user.dir"));
 	}
 
-	@org.junit.Test
+	/*@org.junit.Test
 	public void ormBeanTest() throws Exception {
 		UrpUser bean = OrmUtil.getBean(UrpUser.class, "select * from Urp_User");
 		System.out.println(bean);
-	}
+	}*/
 
 	@org.junit.Test
 	public void resultSetTest() throws Exception {
@@ -141,21 +217,18 @@ public class Test {
 					if (type == Integer.class || type == Integer.TYPE) {
 						// field.set(obj, value);
 						field.set(newInstance, rs.getInt(i));
-					}
-					else if (type == Byte.class || type == Byte.TYPE) {
+					} else if (type == Byte.class || type == Byte.TYPE) {
 						// field.set(obj, value);
 						field.set(newInstance, rs.getByte(i));
-					}
-					else if (type == Date.class) {
+					} else if (type == Date.class) {
 						// field.set(obj, value);
 						field.set(newInstance, rs.getDate(i));
-					}
-					else if (type == String.class) {
+					} else if (type == String.class) {
 						// field.set(obj, value);
 						field.set(newInstance, rs.getString(i));
 					}
-				}else{
-					
+				} else {
+
 				}
 			}
 		}
@@ -184,16 +257,15 @@ public class Test {
 		System.out.println(integer.getClass() == Integer.TYPE);// false
 		System.out.println(int.class == Integer.TYPE);// true
 	}
-	
+
 	@org.junit.Test
 	public void stringTest() throws Exception {
 		/**
-		 * true
-		 * false
+		 * true false
 		 */
-		String string1=new StringBuffer("aa").append("va").toString();
-		String string2=new StringBuffer("ja").append("va").toString();
-		System.out.println(string1.intern()==string1);
-		System.out.println(string2.intern()==string2);
+		String string1 = new StringBuffer("aa").append("va").toString();
+		String string2 = new StringBuffer("ja").append("va").toString();
+		System.out.println(string1.intern() == string1);
+		System.out.println(string2.intern() == string2);
 	}
 }

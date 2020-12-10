@@ -16,8 +16,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.com.annotation.ResponseBody;
 import org.com.context.ActionContext;
 import org.com.context.ActionContext.ActionMetaData;
+import org.com.json.JSON;
 import org.com.mvc.bean.ServletContextBean;
 import org.com.util.ActionContextUtil;
 import org.com.util.ServletContextUtils;
@@ -112,8 +114,17 @@ public class ServletDispacher extends HttpServlet {
 				//调用action处理
 				Object invoke = currentMethod.invoke(newInstance, args);
 				//渲染视图
-				if(invoke!=null && invoke instanceof String){
-					req.getRequestDispatcher((String)invoke).forward(req, resp);
+				if(invoke!=null){
+					if(invoke instanceof String)
+						req.getRequestDispatcher((String)invoke).forward(req, resp);
+					if(currentMethod.getAnnotationsByType(ResponseBody.class).length!=0){
+						//进行JSON处理
+						resp.setContentType("application/json;charset=utf-8");
+						String parseObject = JSON.parseObject(invoke);
+						resp.getWriter().println(parseObject);
+						return;
+					}
+					
 				}
 			}
 			/**

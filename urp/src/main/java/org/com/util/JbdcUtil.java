@@ -6,6 +6,12 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 //工具类里边的所有方法都必须是静态的
+/**
+ * 这里需要配置数据源的信息，
+ * 【需要一个数据源的信息】
+ * @author Smith
+ *
+ */
 public class JbdcUtil {
 	static{
 		try {

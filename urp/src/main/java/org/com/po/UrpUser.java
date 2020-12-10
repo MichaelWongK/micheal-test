@@ -4,9 +4,6 @@ import java.util.Date;
 import org.com.annotation.Bean;
 @Bean
 public class UrpUser{
-	static{
-		System.out.println("urp user init");
-	}
 	private String department;
 	private Byte type;
 	private String userName;

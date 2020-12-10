@@ -7,6 +7,28 @@ import sun.misc.Unsafe;
 public class DemoTest {
 	public String string1 = new String("hello");
 	@Test
+	public void sqlPaserTest(){
+		Object[] args={"root",1};
+		int argsIndex=0;
+		StringBuilder stringBuilder = new StringBuilder();
+		String[] split = "select    * from urp_user where userName= ? and password= ?".split(" ");
+		for (String string : split) {
+			if(string.contains("?")){
+				Object object = args[argsIndex++];
+				if(object instanceof String){
+					string="\""+string.replace("?", (String)object)+"\"";
+				}
+				if(object instanceof Integer){
+					string=string.replace("?", String.valueOf(object));
+				}
+				stringBuilder.append(string).append(" ");
+			}else{
+				stringBuilder.append(string).append(" ");
+			}
+		}
+		System.out.println(stringBuilder.toString());
+	}
+	@Test
 	public void stringTest()throws Exception{
 		/**
 		 * string类允许继承，final修饰。
