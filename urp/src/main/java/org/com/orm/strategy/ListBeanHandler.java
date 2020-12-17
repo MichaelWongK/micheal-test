@@ -14,7 +14,6 @@ public class ListBeanHandler<T> implements OrmHandler<List<T>> {
 		this.clazz = clazz;
 	}
 
-	@Override
 	public List<T> handler(ResultSet rs) {
 		// TODO Auto-generated method stub
 		// while生成bean

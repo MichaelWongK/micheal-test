@@ -14,7 +14,6 @@ public class SingtonBeanHandler<T> implements OrmHandler<T> {
 		this.clazz = clazz;
 	}
 
-	@Override
 	public T handler(ResultSet rs) {
 		// TODO Auto-generated method stub]
 		T newInstance = null;
