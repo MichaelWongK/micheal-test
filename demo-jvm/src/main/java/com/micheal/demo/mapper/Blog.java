@@ -1,5 +1,6 @@
 package com.micheal.demo.mapper;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -7,8 +8,15 @@ import lombok.Data;
  * @date 2020/12/16 23:34
  * @Description
  */
-@Data
+//@Data
+//@AllArgsConstructor
 public class Blog {
     private Integer id;
     private String name;
+
+
+//    public Blog(Integer id, String name) {
+//        this.id = id;
+//        this.name = name;
+//    }
 }

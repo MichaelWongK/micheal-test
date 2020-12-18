@@ -30,7 +30,7 @@ public class MybatisDemo {
         SqlSession sqlSession = sqlSessionFactory.openSession();
         BlogMapper blogMapper = sqlSession.getMapper(BlogMapper.class);
 
-        System.out.println(blogMapper.selectBlog(1));
+        System.out.println(blogMapper.selectBlog(1, "zhnagsan"));
 
 
     }

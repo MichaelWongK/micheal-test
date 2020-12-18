@@ -67,6 +67,13 @@
             <version>3.5.6</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5.5</version>
+        </dependency>
+
     </dependencies>
 
     <build>
