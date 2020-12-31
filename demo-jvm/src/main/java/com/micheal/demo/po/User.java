@@ -4,6 +4,11 @@ public class User{
 	private String password;
 	private Integer id;
 	private String username;
+
+	public User(String username) {
+		this.username = username;
+	}
+
 	private void setPassword(String password) {
 		this.password = password;
 	}
