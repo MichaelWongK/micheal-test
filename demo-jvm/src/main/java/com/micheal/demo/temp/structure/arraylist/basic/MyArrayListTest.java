@@ -2,6 +2,8 @@ package com.micheal.demo.temp.structure.arraylist.basic;
 
 import com.micheal.demo.po.User;
 
+import java.util.ArrayList;
+
 /**
  * @author <a href="mailto:wangmk13@163.com">micheal.wang</a>
  * @date 2020/12/30 22:30
@@ -22,7 +24,8 @@ public class MyArrayListTest {
     }
 
     public static void main(String[] args) {
-        MyArrayList<User> myArrayList = new MyArrayList();
+//        main2(new String[]{});
+        MyArrayList<User> myArrayList = new MyArrayList<User>();
         myArrayList.add(new User("micheal"));
         myArrayList.add(new User("kkk"));
         myArrayList.add(new User("jjjjjj"));

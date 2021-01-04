@@ -13,7 +13,7 @@ public class MyArrayList<T> {
 
     private static final int DEFAULT_CAPACITY = 10;
 
-    private int size;
+    private int size = 0; // 游标    可写位置为size   可读位置为size-1
 
     public T[] elements;
 
@@ -22,7 +22,7 @@ public class MyArrayList<T> {
     }
 
     public MyArrayList(int capacity) {
-        elements = (T[]) new Object[capacity];
+        elements = (T[]) (new Object[capacity]);
     }
 
     public void add(T element) {
@@ -70,6 +70,7 @@ public class MyArrayList<T> {
             elements[i] = elements[i+1];
         }
         size--;
+        elements[size] = null;
         return old;
     }
 
@@ -91,6 +92,9 @@ public class MyArrayList<T> {
     }
 
     public void clear() {
+        for (int i = 0; i < size; i++) {
+            elements[i] = null;
+        }
         size = 0;
     }
 

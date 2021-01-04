@@ -7,6 +7,13 @@ public class User{
 
 	public User(String username) {
 		this.username = username;
+		this.password = "aaa";
+		this.id = 111;
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
 	}
 
 	private void setPassword(String password) {
