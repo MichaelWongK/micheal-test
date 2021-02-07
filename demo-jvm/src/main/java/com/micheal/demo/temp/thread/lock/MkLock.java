@@ -40,8 +40,6 @@ public class MkLock extends AbstractQueuedSynchronizer implements Lock {
      * 加入队列（存在并发）
      */
     private void addQueue() {
-        new AbstractQueuedSynchronizer.Node(Thread.currentThread(), AbstractQueuedSynchronizer().Node.EXCLUSIVE);
-        AbstractQueuedSynchronizer.Node.EXCLUSIVE;new AbstractQueuedSynchronizer.Node();
     }
 
     @Override
