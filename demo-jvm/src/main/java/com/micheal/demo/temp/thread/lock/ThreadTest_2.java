@@ -1,6 +1,5 @@
 package com.micheal.demo.temp.thread.lock;
 
-import java.util.concurrent.locks.Lock;
 
 /**
  * @author <a href="mailto:wangmk13@163.com">micheal.wang</a>
